@@ -49,4 +49,10 @@ urlpatterns = [
     # path("accounts/google/login/",views.google_login, name="google_login")
     path('accounts/google/direct-login/', oauth2_login, name='google_direct_login'),
 
+    ##PAYMENTS##
+     path('subscription/', views.subscription_page, name='subscription_page'),
+    path('create_order/<str:plan_type>/', views.create_order, name='create_order'),
+    path('payment_success/', views.payment_success, name='payment_success'),
+    path('payment_failure/', views.payment_failure, name='payment_failure'),
+
     ]

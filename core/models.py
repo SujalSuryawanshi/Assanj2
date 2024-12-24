@@ -6,7 +6,7 @@ from embed_video.fields import EmbedVideoField
 from users.models import CustomUser
 from django.core.validators import MinValueValidator, MaxValueValidator 
 from django.db.models import Avg
-
+from datetime import timedelta
 
 
 
@@ -219,4 +219,17 @@ class UserLike(models.Model):
 
 
 
+class Subscription(models.Model):
+    PLAN_CHOICES = [
+        ('monthly', 'Monthly'),
+        ('quarterly', 'Quarterly'),
+        ('yearly', 'Yearly'),
+    ]
 
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    plan_type = models.CharField(max_length=10, choices=PLAN_CHOICES)
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField()
+
+    def __str__(self):
+        return f'{self.user.username} - {self.plan_type}'

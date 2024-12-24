@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            font-size: 2em;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .subscription-cards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card.selected {
+            border: 2px solid #28a745; /* Green border to highlight the selected card */
+            box-shadow: 0 8px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .card h3 {
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .card p {
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .card .price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        #pay-button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        #pay-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Your Subscription Plan</h1>
+    <div class="container">
+        <div class="subscription-cards">
+            <div class="card" data-plan="monthly" data-price="30">
+                <h3>1 month</h3>
+                <p>Get access to exclusive content and features</p>
+                <p class="price">₹30</p>
+            </div>
+            <div class="card" data-plan="quarterly" data-price="100">
+                <h3>3 months</h3>
+                <p>Get access to exclusive content and features</p>
+                <p class="price">₹100</p>
+            </div>
+            <div class="card" data-plan="yearly" data-price="300">
+                <h3>12 months</h3>
+                <p>Get access to exclusive content and features</p>
+                <p class="price">₹300</p>
+            </div>
+        </div>
+        <button type="button" id="pay-button">Proceed to Pay</button>
+    </div>
+
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let selectedPlan = null;
+
+            // Event listener for selecting a subscription plan card
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Deselect any previously selected card
+                    cards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Mark the clicked card as selected
+                    card.classList.add('selected');
+                    selectedPlan = card.getAttribute('data-plan');
+                    console.log("Selected Plan:", selectedPlan); // Optional: Debugging output
+                });
+            });
+
+            // Handle the payment button click
+            document.getElementById('pay-button').addEventListener('click', function() {
+                if (!selectedPlan) {
+                    alert("Please select a plan before proceeding.");
+                    return;
+                }
+
+                // Fetch the order creation endpoint for the selected plan
+                fetch(`/create_order/${selectedPlan}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.amount && data.order_id) {
+                            var options = {
+                                key: "{{ settings.RAZORPAY_KEY_ID }}",  // Ensure this key is correctly set
+                                amount: data.amount,  // Total amount in paise (e.g., 1000 for ₹10)
+                                currency: "INR",
+                                name: "Your Company",  // Replace with your company name
+                                description: "Subscription Payment for " + selectedPlan,
+                                order_id: data.order_id,
+                                handler: function (response) {
+                                    // Create a hidden form to submit payment data to the backend
+                                    var form = document.createElement('form');
+                                    form.method = 'POST';
+                                    form.action = '/payment_success/';
+
+                                    var input1 = document.createElement('input');
+                                    input1.type = 'hidden';
+                                    input1.name = 'order_id';
+                                    input1.value = data.order_id;
+                                    form.appendChild(input1);
+
+                                    var input2 = document.createElement('input');
+                                    input2.type = 'hidden';
+                                    input2.name = 'payment_id';
+                                    input2.value = response.razorpay_payment_id;
+                                    form.appendChild(input2);
+
+                                    var input3 = document.createElement('input');
+                                    input3.type = 'hidden';
+                                    input3.name = 'signature';
+                                    input3.value = response.razorpay_signature;
+                                    form.appendChild(input3);
+
+                                    document.body.appendChild(form);
+                                    form.submit();
+                                }
+                            };
+
+                            // Open Razorpay payment gateway
+                            var rzp = new Razorpay(options);
+                            rzp.open();
+                        } else {
+                            alert("Error: Could not create order.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error while creating order:", error);
+                        alert("Something went wrong. Please try again.");
+                    });
+            });
+        });
+    </script>
+</body>
+</html>
