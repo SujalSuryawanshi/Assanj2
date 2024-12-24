@@ -1,0 +1,126 @@
+{% extends "base.html" %} 
+{% load socialaccount %}
+{% load star_rating %}
+{% load embed_video_tags %}
+{% load has_group %}
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+<br>
+<div class="container">
+    <div class="profile-section">
+        
+        <!-- User Info -->
+        <div class="profile-info">
+            <h3 class="anton-regular">Name</h3>
+            <p class="anton-regular">{{ profile_user.username }}</p>
+            
+            <h3 class="anton-regular">Assanj Points:</h3>
+            <p class="anton-regular">{{ profile_user.points }}</p>
+            
+            <h3 class="anton-regular">First Name</h3>
+            <p class="anton-regular">{{ profile_user.first_name }}</p>
+
+            <h3 class="anton-regular">Last Name</h3>
+            <p class="anton-regular">{{ profile_user.last_name }}</p>
+
+            <h3 class="anton-regular">Email</h3>
+            <p class="anton-regular">{{ profile_user.email }}</p>
+        </div>
+        
+        <!-- Edit Profile Button -->
+        <div class="text-center my-4">
+            <a href="{% url 'edit_profile' %}" class="btn btn-success">Edit Profile</a>
+        </div>
+        
+        <!-- Logout Button -->
+        <div class="text-center">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary">Logout</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+<h4 class="anton-regular">Search Users</h4>
+<br>
+<form method="get" class="anton-regular" action="{% url 'search_users' %}">
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+<br>
+
+<h4 class="anton-regular">Friend Requests Sent</h4>
+<br>
+<ul id="friend-requests-list">
+    {% for request in friend_requests_sent %}
+        <li class="anton-regular" id="request-{{ request.id }}">
+            {{ request.to_user.username }} - 
+            <form method="post" action="{% url 'delete_friend_request' %}" style="display:inline;" class="cancel-request-form" data-request-id="{{ request.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="request_id" value="{{ request.id }}">
+                <button type="submit" class="btn btn-warning">Cancel Request</button>
+            </form>
+        </li>
+        <br>
+    {% endfor %}
+</ul>
+
+<h4 class="anton-regular">Friend Requests Received</h4>
+<br>
+<ul>
+    {% for request in friend_requests_received %}
+    <li id="received-request-{{ request.id }}" class="anton-regular">
+        {{ request.from_user.username }} - 
+        <button 
+            onclick="handleFriendRequest('accept', {{ request.id }})" 
+            class="btn btn-success">
+            Accept
+        </button>
+        <button 
+            onclick="handleFriendRequest('decline', {{ request.id }})" 
+            class="btn btn-danger">
+            Decline
+        </button>
+    </li>
+    {% endfor %}
+</ul>
+
+<h4 class="anton-regular">Friends</h4>
+<br>
+<ul class='Menu-title'>
+    {% for friend in friends %}
+        {% comment %} <li class="anton-regular">{{ friend.username }}</li> {% endcomment %}
+        <a href="{% url 'user_profile' friend.username %}">{{ friend.username }}'s Profile</a><br>
+    {% endfor %}
+</ul>
+<br>
+<br>
+<br>
+<h2 class='anton-regular'>Followed Stallers</h2>
+<div class="slider slider1">
+    <div class="slides slides1">
+      {% for i in followed_stallers %}
+        <div class="slide slide1">
+          <div class="card mb-4">
+              {% video i.video '100% x 80%' %}    
+              <h5 class="card-title">{{i.name}}</h5>
+              <h6 class="home-card-text">{{i.address}}</h6>
+              <h6 class="home-card-text">{{i.timings}}</h6>
+              <h6 class="home-card-text">{{i.egit}}</h6>
+              <h6 class="home-card-text">{{ i.rating|star_rating }} ({{ i.rating }})</h6>
+              <h6 class="home-card-text">Followers: {{i.follow_count}}</h6>
+              <a href="{% url 'detail' i.name %}" class="btn btn-primary look-button" data-name="{{i.name}}">Look</a>  
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <button class="prev" onclick="prevSlide1()">&#10094;</button>
+    <button class="next" onclick="nextSlide1()">&#10095;</button>
+  </div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Offers{% endblock title %}
+{% block description %}Get best offers on {{ offer.owner }}{% endblock description %}
+{% block keywords %}Best offers on {{offer.owner}}, offers on {{offer.owner}}, {{offer.owner}}, best offers on assanj{% endblock keywords %}
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+<div class='premium-title'>
+    <h7 class="menu-text">{{ offer.message }}</h7>
+    <button onclick="goBack()" class="btn-back">Go Back</button>
+</div>
+<br>
+{% for offer in offers %}
+<div class="card">
+    <img src="{{ offer.offer_photo.url }}" alt="{{ offer.title }}">
+    <div class="card-body">
+        <h5 class="desc-heading">{{ offer.title }}</h5>
+        <p class='home-card-text'>{{offer.message}}</p>
+        {% if request.user == offer.owner.owner %}
+        <a href="{% url 'edit_offer' offer.id %}" class="btn btn-primary">Edit</a>
+        <form method="post" action="{% url 'delete_offer' offer.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+<br>
+<br>
+{% endfor %}
+{% endblock content %}

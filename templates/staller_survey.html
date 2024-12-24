@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+{% if user.is_authenticated %}
+<div class="container mt-5">
+        <div class="form-container">
+            <h1 class='anton-regular'>Staller Survey</h1>
+            <form method="POST" class='anton-regular'>
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary btn-block mt-4">Submit</button>
+            </form>
+        </div>
+    </div>
+{% else %}
+<h1 class='text-center'>Login to submit review!</h1>
+{% endif %}
+{% endblock content %}

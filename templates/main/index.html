@@ -1,0 +1,222 @@
+{% extends "base.html" %} 
+{% block content %} 
+{% load socialaccount %}
+{% load star_rating %}
+{% load embed_video_tags %}
+{% load has_group %}
+{% block description %}Look for the style and authenticity, don't hunt quality. Just a mere illusion for spending more instead of spending great!{% endblock description %}
+
+<br><br>
+<div class='description'>
+    <h1 class='desc-heading'> Popular</h1>
+    <div class='desc'>
+      <p>
+        <small>
+          Look for all the popular stalls in your town, and distance is just a number it's the quality and style that you seek!!
+        </small>
+      </p>
+    </div>
+</div>
+<div class="dropdown">
+  <button
+    class="btn dropdown-toggle"
+    type="button"
+    id="dropdownMenuButton"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    Categories
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    {% for cat in cat %}
+      <li><a class="dropdown-item" href="{% url "category" cat.cat_name %}">{{cat.cat_name}}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+</div>
+
+<div class="slider slider1">
+  <div class="slides slides1">
+    {% for i in popu_stalls_with_follow_count %}
+      <div class="slide slide1">
+        <div class="card mb-4">
+            {% video i.popu_stall.video '100% x 80%' %}    
+            <h5 class="card-title">{{i.popu_stall.name}}</h5>
+            <h6 class="home-card-text">{{i.popu_stall.address}}</h6>
+            <h6 class="home-card-text">{{i.popu_stall.timings}}</h6>
+            <h6 class="home-card-text">{{i.popu_stall.egit}}</h6>
+            <h6 class="home-card-text">{{ i.popu_stall.rating|star_rating }} ({{ i.popu_stall.rating }})</h6>
+            <h6 class="home-card-text">Followers: {{i.follow_count}}</h6>
+            <a href="{% url 'detail' i.popu_stall.name %}" class="btn btn-primary look-button" data-name="{{i.popu_stall.name}}">Look</a>  
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <button class="prev" onclick="prevSlide1()">&#10094;</button>
+  <button class="next" onclick="nextSlide1()">&#10095;</button>
+</div>
+
+<br><br>
+<div class='description'>
+  <h1 class='desc-heading'> All stalls</h1>
+  <div class='desc'>
+    <p>
+      <small>
+        Know each and every market that exists in your town!!
+      </small>
+    </p>
+  </div>
+</div>
+
+<div class="slider slider2">
+  <div class="slides slides2">
+    {% for i in stalls_with_follow_count %}
+      <div class="slide slide2">
+        <div class="card mb-4">
+            {% video i.stall.video '100% x 80%' %}    
+            <h5 class="card-title">{{i.stall.name}}</h5>
+            <h6 class="home-card-text">{{i.stall.address}}</h6>
+            <h6 class="home-card-text">{{i.stall.timings}}</h6>
+            <h6 class="home-card-text">{{i.stall.egit}}</h6>
+            <h6 class="home-card-text">{{ i.stall.rating|star_rating }} ({{ i.stall.rating }})</h6>
+            <h6 class="home-card-text">Followers: {{i.follow_count}}</h6>
+            <a href="{% url 'detail' i.stall.name %}" class="btn btn-primary look-button" data-name="{{i.stall.name}}">Look</a>  
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <button class="prev" onclick="prevSlide2()">&#10094;</button>
+  <button class="next" onclick="nextSlide2()">&#10095;</button>
+</div>
+{% endblock content %}  
+
+{% block script %}
+<script>
+  // Preventing the "Look" button click from refreshing the page
+  $(document).ready(function(){
+    $(".look-button").click(function(e){
+      e.preventDefault(); // This prevents the default action, which might be a page refresh
+      var stallName = $(this).data('name'); // Get the stall name from the data attribute
+      window.location.href = "{% url 'detail' 'STALL_NAME' %}".replace('STALL_NAME', stallName); // Navigate to the detail page for the stall
+    });
+  });
+
+  let currentSlide1 = 0;
+  const slides1 = document.querySelectorAll('.slides1 .slide1');
+  const totalSlides1 = slides1.length;
+
+  function updateSlidePosition1() {
+    const slideWidth1 = slides1[currentSlide1].clientWidth;
+    document.querySelector('.slides1').style.transform = `translateX(-${slideWidth1 * currentSlide1}px)`;
+  }
+
+  function nextSlide1() {
+    currentSlide1 = (currentSlide1 + 1) % totalSlides1;
+    updateSlidePosition1();
+  }
+
+  function prevSlide1() {
+    currentSlide1 = (currentSlide1 - 1 + totalSlides1) % totalSlides1;
+    updateSlidePosition1();
+  }
+
+  window.addEventListener('resize', updateSlidePosition1);
+
+  // Slider 2
+  let currentSlide2 = 0;
+  const slides2 = document.querySelectorAll('.slides2 .slide2');
+  const totalSlides2 = slides2.length;
+
+  function updateSlidePosition2() {
+    const slideWidth2 = slides2[currentSlide2].clientWidth;
+    document.querySelector('.slides2').style.transform = `translateX(-${slideWidth2 * currentSlide2}px)`;
+  }
+
+  function nextSlide2() {
+    currentSlide2 = (currentSlide2 + 1) % totalSlides2;
+    updateSlidePosition2();
+  }
+
+  function prevSlide2() {
+    currentSlide2 = (currentSlide2 - 1 + totalSlides2) % totalSlides2;
+    updateSlidePosition2();
+  }
+
+  window.addEventListener('resize', updateSlidePosition2);
+
+  $(document).ready(function(){
+    // Header Slider
+    $(".zXyAbC").owlCarousel({
+        items: 1,
+        loop: true,
+        autoplay: true,
+        autoplayTimeout: 3000,
+        dots: true,
+        nav: false,
+    });
+  });
+</script>
+<script>
+  // Handle cancel request with AJAX
+  document.querySelectorAll('.cancel-request-form').forEach(form => {
+      form.addEventListener('submit', function(event) {
+          event.preventDefault(); // Prevent default form submission
+
+          let formData = new FormData(form);
+          let requestId = formData.get('request_id');
+          
+          fetch("{% url 'delete_friend_request' %}", {
+              method: 'POST',
+              body: formData,
+              headers: {
+                  'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+              }
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  // Remove the request from the list
+                  let requestElement = document.getElementById('request-' + requestId);
+                  requestElement.remove(); // Remove the request from the DOM
+              } else {
+                  alert('An error occurred while canceling the request');
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              alert('An error occurred');
+          });
+      });
+  });
+</script>
+
+<script>
+  function handleFriendRequest(action, requestId) {
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    let url = "";
+
+    if (action === "accept") {
+        url = "{% url 'accept_friend_request' %}";
+    } else if (action === "decline") {
+        url = "{% url 'delete_friend_request' %}";
+    }
+
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken
+        },
+        body: JSON.stringify({ request_id: requestId })
+    })
+    .then(response => {
+        if (response.ok) {
+            document.getElementById(`received-request-${requestId}`).remove();
+        } else {
+            console.error("Failed to process the request.");
+        }
+    })
+    .catch(error => console.error("Error:", error));
+}
+</script>
+{% endblock script %}
