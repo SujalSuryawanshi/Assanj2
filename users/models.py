@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager, PermissionsMixin
 from django.db.models.signals import post_save
 from django.utils import timezone
+from datetime import date, timedelta
 ####(((CUSTOM-USER)))####
 ####((FRIENDS))####
 class CustomUserManager(BaseUserManager):
@@ -36,13 +37,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=False)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
-    current_session_key=models.CharField(max_length=40, null=True, blank=True)
+    current_session_key = models.CharField(max_length=40, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
-    points = models.IntegerField(default=100) 
-
+    points = models.IntegerField(default=100)
+    
+    # New subscription-related fields
+    subscription_status = models.CharField(
+        max_length=20,
+        default="Free",  # Default plan
+        choices=[
+            ("Free", "Free"),
+            ("Star", "Star"),
+        ],
+    )
+    subscription_expiry = models.DateField(null=True, blank=True)  # Expiry date for subscriptions
+    
     objects = CustomUserManager()
     
     USERNAME_FIELD = 'username'
@@ -57,7 +69,34 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return super().has_module_perms(app_label)
 
+    # Utility method to update subscription details
+    def update_subscription(self, plan_type):
+        """
+        Update the subscription status and expiry date based on the selected plan.
+        """
+        today = date.today()
+        if plan_type == "Monthly":
+            self.subscription_status = "Star"
+            self.subscription_expiry = today + timedelta(days=30)
+        elif plan_type == "Quarterly":
+            self.subscription_status = "Star"
+            self.subscription_expiry = today + timedelta(days=90)
+        elif plan_type == "Yearly":
+            self.subscription_status = "Star"
+            self.subscription_expiry = today + timedelta(days=365)
+        else:
+            self.subscription_status = "Free"
+            self.subscription_expiry = None
+        self.save()
 
+    # Utility method to check if the subscription is active
+    def is_subscription_active(self):
+        """
+        Check if the subscription is still valid.
+        """
+        if self.subscription_expiry:
+            return date.today() <= self.subscription_expiry
+        return False
 class EmailVerification(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='email_verification')
     otp = models.CharField(max_length=6)

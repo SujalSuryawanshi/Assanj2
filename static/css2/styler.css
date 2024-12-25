@@ -55,12 +55,12 @@ h6.home-card-text {
 .btn-primary:hover {
   background-color: #732d91;
 }
-
 .slider {
   position: relative;
   overflow: hidden;
-  margin: 30px auto;
+  margin: auto;
   max-width: 1200px;
+  width: 100%;
 }
 
 .slides {
@@ -69,11 +69,12 @@ h6.home-card-text {
 }
 
 .slide {
-  min-width: 300px;
+  flex: 1 0 100%; /* By default, each slide takes up 100% of the width */
   margin: 0 10px;
-  flex: 1 0 auto;
+  box-sizing: border-box;
 }
 
+/* Navigation buttons */
 .prev, .next {
   position: absolute;
   top: 50%;
@@ -99,6 +100,46 @@ h6.home-card-text {
 .prev:hover, .next:hover {
   background-color: rgba(0, 0, 0, 0.7);
 }
+
+/* Media Query for Tablet and Larger Screens */
+@media (min-width: 768px) {
+  .slide {
+    flex: 1 0 33.33%; /* Each slide takes 1/3rd of the container width */
+    margin: 0 10px;
+  }
+
+  .prev, .next {
+    font-size: 1.5rem; /* Keep button size appropriate for tablets */
+    padding: 10px;
+  }
+}
+
+/* Media Query for Large Screens (Desktop) */
+@media (min-width: 1024px) {
+  .slide {
+    flex: 1 0 31%; /* Show 3 slides per view */
+    margin: 0 15px; /* Adjust margin to fit 3 slides */
+  }
+
+  .prev, .next {
+    font-size: 1.7rem; /* Larger button size for desktop */
+    padding: 12px;
+  }
+}
+
+/* Mobile View (Below 768px) */
+@media (max-width: 768px) {
+  .slide {
+    flex: 1 0 100%; /* Each slide takes up the full width on mobile */
+    margin: 0 5px; /* Smaller margins for mobile view */
+  }
+
+  .prev, .next {
+    font-size: 1.2rem; /* Adjust button size for small screens */
+    padding: 8px;
+  }
+}
+
 
 form .form-control {
   font-family: 'Fjalla One', sans-serif;
@@ -222,4 +263,83 @@ footer a:hover {
 .dropdown-item:hover {
   background-color: #2575fc;
   color: white;
+}
+
+
+.profile-card {
+  max-width: 400px;
+  margin: 50px auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Header Section */
+.profile-header {
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  color: #ffffff;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.profile-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Profile Information */
+.profile-body {
+  padding: 20px;
+}
+
+.profile-info h4 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 5px;
+}
+
+.profile-info p {
+  font-size: 14px;
+  color: #555555;
+  margin: 0 0 15px;
+  line-height: 1.6;
+}
+
+/* Actions Section */
+.profile-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.profile-actions .btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 20px;
+  text-decoration: none;
+  margin: 5px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.profile-actions .btn-primary {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+}
+
+.profile-actions .btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.profile-actions .btn-danger {
+  background-color: #dc3545;
+  color: #ffffff;
+  border: none;
+}
+
+.profile-actions .btn-danger:hover {
+  background-color: #a71d2a;
 }

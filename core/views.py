@@ -17,7 +17,7 @@ from django.urls import reverse_lazy, reverse
 from django.core.mail import send_mail  # Import for sending email
 from django.utils.crypto import get_random_string 
 from django.contrib.auth.models import Group
-
+from datetime import date,timedelta
 ##PAYMENTS##
 import razorpay
 from django.conf import settings
@@ -411,33 +411,59 @@ def send_friend_request(request):
         FriendRequest.objects.create(from_user=request.user, to_user=to_user)
     return redirect('profile', username=request.user.username)
 
+
 @login_required
 def accept_friend_request(request):
     if request.method == 'POST':
-        friend_request_id = request.POST.get('request_id')
+        data = json.loads(request.body)  # Parse JSON data
+        friend_request_id = data.get('request_id')
         friend_request = get_object_or_404(FriendRequest, id=friend_request_id)
+
         if friend_request.to_user == request.user:
+            # Add both users as friends
             request.user.friends.add(friend_request.from_user)
             friend_request.from_user.friends.add(request.user)
+            # Delete the friend request
             friend_request.delete()
+            
+
     return redirect('profile', username=request.user.username)
+
 
 @login_required
 def delete_friend_request(request):
     if request.method == 'POST':
-        friend_request_id = request.POST.get('request_id')
+        data = json.loads(request.body)  # Parse JSON data
+        friend_request_id = data.get('request_id')
         friend_request = get_object_or_404(FriendRequest, id=friend_request_id)
 
-        # Ensure that the user is either the sender or receiver of the friend request
         if friend_request.to_user == request.user or friend_request.from_user == request.user:
             friend_request.delete()
-
-        # Return a success response (if using AJAX)
-        return redirect('profile', username=request.user.username)
+            
 
     return redirect('profile', username=request.user.username)
 
 
+@login_required
+def per_del_friend(request):
+    if request.method == 'POST':
+            # Parse the request body
+            data = json.loads(request.body)
+            friend_id = data.get('request_id')
+
+            if not friend_id:
+                return JsonResponse({"error": "Missing request_id."}, status=400)
+
+            # Get the friend object
+            friend = get_object_or_404(CustomUser, id=friend_id)
+
+            # Check if the friend relationship exists
+            if request.user.friends.filter(id=friend.id).exists():
+                request.user.friends.remove(friend)
+                friend.friends.remove(request.user)
+                return JsonResponse({"message": "Friend removed successfully."}, status=200)
+
+    return redirect('profile', username=request.user.username)
 ###SEARCH_
 @login_required
 def search_users(request):
@@ -787,36 +813,44 @@ def create_order(request, plan_type):
     return JsonResponse({'order_id': order_id, 'amount': amount})
 
 def payment_success(request):
-    order_id = request.POST.get('order_id')
-    payment_id = request.POST.get('payment_id')
-    signature = request.POST.get('signature')
+    if request.method == "POST":
+        payment_id = request.POST.get('payment_id')
+        order_id = request.POST.get('order_id')
+        signature = request.POST.get('signature')
+        plan_type = request.POST.get('plan_type')  # Example: "Monthly", "Quarterly", "Yearly"
 
-    # Verify the payment with Razorpay
-    params_dict = {
-        'razorpay_order_id': order_id,
-        'razorpay_payment_id': payment_id,
-        'razorpay_signature': signature
-    }
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-    try:
-        razorpay_client.utility.verify_payment_signature(params_dict)
-    except:
-        return redirect('payment_failure')
+        try:
+            # Verify payment signature
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': order_id,
+                'razorpay_payment_id': payment_id,
+                'razorpay_signature': signature,
+            })
 
-    # Assign user to "Star" group
-    user = request.user
-    star_group = Group.objects.get(name='Star')
-    user.groups.add(star_group)
+            # Calculate the subscription expiry date based on the plan
+            today = date.today()
+            if plan_type == "Monthly":
+                expiry_date = today + timedelta(days=30)
+            elif plan_type == "Quarterly":
+                expiry_date = today + timedelta(days=90)
+            elif plan_type == "Yearly":
+                expiry_date = today + timedelta(days=365)
+            else:
+                expiry_date = None
 
-    # Create subscription record
-    end_date = timezone.now() + timedelta(days=30)  # Adjust this based on the plan selected
-    subscription = Subscription.objects.create(
-        user=user,
-        plan_type=request.POST.get('plan_type'),
-        end_date=end_date
-    )
+            # Update the user's subscription details
+            user = request.user
+            user.profile.subscription_status = "Star"  # Update the subscription status
+            user.profile.subscription_expiry = expiry_date  # Set the expiry date
+            user.profile.save()
 
-    return render(request, 'payment_success.html', {'subscription': subscription})
+            # Redirect to success page
+            return redirect('/subscription/success/')
+
+        except razorpay.errors.SignatureVerificationError:
+            return redirect('/subscription/failure/')
 
 def payment_failure(request):
     return render(request, 'payment_failure.html')

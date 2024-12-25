@@ -87,8 +87,18 @@
         #pay-button:hover {
             background-color: #218838;
         }
+        .btn-back{
+            width: 100%;  /* Full width of the container */
+            background-color: #28a745;  /* Green background color */
+            color: white;  /* White text color */
+            border: none;  /* Remove default border */
+            padding: 15px;  /* Padding inside the button */
+            font-size: 1.2em;  /* Font size */
+    
+        }
     </style>
 </head>
+
 <body>
     <h1>Select Your Subscription Plan</h1>
     <div class="container">
@@ -111,13 +121,14 @@
         </div>
         <button type="button" id="pay-button">Proceed to Pay</button>
     </div>
-
+    <button onclick="goBack()" class="btn-back">Go Back</button>
+    
     <!-- Razorpay Checkout Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let selectedPlan = null;
-
+            
             // Event listener for selecting a subscription plan card
             const cards = document.querySelectorAll('.card');
             cards.forEach(card => {
@@ -131,19 +142,19 @@
                     console.log("Selected Plan:", selectedPlan); // Optional: Debugging output
                 });
             });
-
+            
             // Handle the payment button click
             document.getElementById('pay-button').addEventListener('click', function() {
                 if (!selectedPlan) {
                     alert("Please select a plan before proceeding.");
                     return;
                 }
-
+                
                 // Fetch the order creation endpoint for the selected plan
                 fetch(`/create_order/${selectedPlan}/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.amount && data.order_id) {
+                .then(response => response.json())
+                .then(data => {
+                    if (data.amount && data.order_id) {
                             var options = {
                                 key: "{{ settings.RAZORPAY_KEY_ID }}",  // Ensure this key is correctly set
                                 amount: data.amount,  // Total amount in paise (e.g., 1000 for ₹10)
@@ -156,7 +167,7 @@
                                     var form = document.createElement('form');
                                     form.method = 'POST';
                                     form.action = '/payment_success/';
-
+                                    
                                     var input1 = document.createElement('input');
                                     input1.type = 'hidden';
                                     input1.name = 'order_id';
@@ -194,5 +205,10 @@
             });
         });
     </script>
+    <script>
+        function goBack() {
+          window.history.back();
+        }
+      </script>
 </body>
 </html>

@@ -4,42 +4,38 @@
 {% load embed_video_tags %}
 {% load has_group %}
 {% block content %}
-<br>
-<br>
-<br>
-<br>
-<br>
-<div class="container">
-    <div class="profile-section">
-        
-        <!-- User Info -->
+
+<div class="profile-card">
+    <div class="profile-header">
+        <h2 class="profile-title">User Profile</h2>
+    </div>
+    <div class="profile-body">
         <div class="profile-info">
-            <h3 class="anton-regular">Name</h3>
-            <p class="anton-regular">{{ profile_user.username }}</p>
-            
-            <h3 class="anton-regular">Assanj Points:</h3>
-            <p class="anton-regular">{{ profile_user.points }}</p>
-            
-            <h3 class="anton-regular">First Name</h3>
-            <p class="anton-regular">{{ profile_user.first_name }}</p>
+            <h4>Name:</h4>
+            <p>{{ profile_user.username }}</p>
 
-            <h3 class="anton-regular">Last Name</h3>
-            <p class="anton-regular">{{ profile_user.last_name }}</p>
+            <h4>Assanj Points:</h4>
+            <p>{{ profile_user.points }}</p>
 
-            <h3 class="anton-regular">Email</h3>
-            <p class="anton-regular">{{ profile_user.email }}</p>
+            <h4>First Name:</h4>
+            <p>{{ profile_user.first_name }}</p>
+
+            <h4>Last Name:</h4>
+            <p>{{ profile_user.last_name }}</p>
+
+            <h4>Email:</h4>
+            <p>{{ profile_user.email }}</p>
+            <h4>Status:</h4> 
+            <p>{{ profile_user.subscription_status }}</p>
+            <h4>Expires on:</h4>
+            <p>{{ profile_user.subscription_expiry }}</p>
         </div>
-        
-        <!-- Edit Profile Button -->
-        <div class="text-center my-4">
-            <a href="{% url 'edit_profile' %}" class="btn btn-success">Edit Profile</a>
-        </div>
-        
-        <!-- Logout Button -->
-        <div class="text-center">
-            <form action="{% url 'logout' %}" method="post">
+
+        <div class="profile-actions">
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-outline-primary">Logout</button>
+                <button type="submit" class="btn btn-danger">Logout</button>
             </form>
         </div>
     </div>
@@ -54,7 +50,6 @@
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
 <br>
-
 <h4 class="anton-regular">Friend Requests Sent</h4>
 <br>
 <ul id="friend-requests-list">
@@ -75,30 +70,41 @@
 <br>
 <ul>
     {% for request in friend_requests_received %}
-    <li id="received-request-{{ request.id }}" class="anton-regular">
-        {{ request.from_user.username }} - 
-        <button 
-            onclick="handleFriendRequest('accept', {{ request.id }})" 
-            class="btn btn-success">
-            Accept
-        </button>
-        <button 
-            onclick="handleFriendRequest('decline', {{ request.id }})" 
-            class="btn btn-danger">
-            Decline
-        </button>
-    </li>
+        <li id="received-request-{{ request.id }}" class="anton-regular">
+            {{ request.from_user.username }} - 
+            <button 
+                onclick="handleFriendRequest('accept', {{ request.id }})" 
+                class="btn btn-success">
+                Accept
+            </button>
+            <button 
+                onclick="handleFriendRequest('decline', {{ request.id }})" 
+                class="btn btn-danger">
+                Decline
+            </button>
+        </li>
     {% endfor %}
 </ul>
 
+
 <h4 class="anton-regular">Friends</h4>
 <br>
-<ul class='Menu-title'>
+<ul class="Menu-title">
     {% for friend in friends %}
-        {% comment %} <li class="anton-regular">{{ friend.username }}</li> {% endcomment %}
-        <a href="{% url 'user_profile' friend.username %}">{{ friend.username }}'s Profile</a><br>
+        <li class="anton-regular" id="friend-{{ friend.id }}">
+            <a href="{% url 'user_profile' friend.username %}">
+                {{ friend.username }}'s Profile
+            </a>
+            <button 
+                onclick="removeFriend({{ friend.id }})" 
+                class="btn btn-danger">
+                Remove as Friend
+            </button>
+        </li>
+        <br>
     {% endfor %}
 </ul>
+
 <br>
 <br>
 <br>

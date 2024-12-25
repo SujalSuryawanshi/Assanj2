@@ -1,87 +1,83 @@
-const body = document.querySelector("body"),
-      nav = document.querySelector("nav"),
-      modeToggle = document.querySelector(".dark-light"),
-      searchToggle = document.querySelector(".searchToggle"),
-      sidebarOpen = document.querySelector(".sidebarOpen"),
-      siderbarClose = document.querySelector(".siderbarClose");
-      let getMode = localStorage.getItem("mode");
-          if(getMode && getMode === "dark-mode"){
-            body.classList.add("dark");
-          }
-// js code to toggle dark and light mode
-      modeToggle.addEventListener("click" , () =>{
-        modeToggle.classList.toggle("active");
-        body.classList.toggle("dark");
-        // js code to keep user selected mode even page refresh or file reopen
-        if(!body.classList.contains("dark")){
-            localStorage.setItem("mode" , "light-mode");
-        }else{
-            localStorage.setItem("mode" , "dark-mode");
-        }
-      });
-// js code to toggle search box
-        searchToggle.addEventListener("click" , () =>{
-        searchToggle.classList.toggle("active");
-      });
- 
-      
-//   js code to toggle sidebar
-sidebarOpen.addEventListener("click" , () =>{
-    nav.classList.add("active");
-});
-body.addEventListener("click" , e =>{
-    let clickedElm = e.target;
-    if(!clickedElm.classList.contains("sidebarOpen") && !clickedElm.classList.contains("menu")){
-        nav.classList.remove("active");
-    }
+// Slider 1 Drag Functionality
+const slider1 = document.querySelector('.slider1 .slides1');
+let isDragging1 = false;
+let startPos1 = 0;
+let currentTranslate1 = 0;
+let prevTranslate1 = 0;
+
+slider1.addEventListener('touchstart', (e) => {
+  isDragging1 = true;
+  startPos1 = e.touches[0].clientX;
 });
 
-
-
-// Drop down button
-
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-      }
-    }
-  }
-}
-
-
-
-
-
-// Rater 
-
-document.addEventListener('DOMContentLoaded', () => {
-  const reels = document.querySelectorAll('.reel');
-
-  reels.forEach((reel, index) => {
-      reel.addEventListener('touchstart', (e) => {
-          startY = e.touches[0].clientY;
-      });
-
-      reel.addEventListener('touchend', (e) => {
-          const endY = e.changedTouches[0].clientY;
-          const deltaY = startY - endY;
-
-          if (deltaY > 50 && index < reels.length - 1) {
-              reels[index + 1].scrollIntoView({ behavior: 'smooth' });
-          } else if (deltaY < -50 && index > 0) {
-              reels[index - 1].scrollIntoView({ behavior: 'smooth' });
-          }
-      });
-  });
+slider1.addEventListener('touchmove', (e) => {
+  if (!isDragging1) return;
+  const currentPosition = e.touches[0].clientX;
+  currentTranslate1 = prevTranslate1 + (currentPosition - startPos1);
+  slider1.style.transform = `translateX(${currentTranslate1}px)`;
 });
 
+slider1.addEventListener('touchend', () => {
+  isDragging1 = false;
+
+  // Snap to closest slide
+  const slides = document.querySelectorAll('.slider1 .slide1');
+  const slideWidth = slides[0].offsetWidth;
+  const totalSlides = slides.length;
+
+  let closestIndex = Math.round(-currentTranslate1 / slideWidth);
+  closestIndex = Math.max(0, Math.min(totalSlides - 1, closestIndex));
+
+  currentTranslate1 = -closestIndex * slideWidth;
+  prevTranslate1 = currentTranslate1;
+
+  slider1.style.transform = `translateX(${currentTranslate1}px)`;
+  slider1.style.transition = 'transform 0.3s ease-in-out'; // Smooth snap
+});
+
+// Reset transition on touchstart
+slider1.addEventListener('touchstart', () => {
+  slider1.style.transition = 'none';
+});
+
+// Slider 2 Drag Functionality
+const slider2 = document.querySelector('.slider2 .slides2');
+let isDragging2 = false;
+let startPos2 = 0;
+let currentTranslate2 = 0;
+let prevTranslate2 = 0;
+
+slider2.addEventListener('touchstart', (e) => {
+  isDragging2 = true;
+  startPos2 = e.touches[0].clientX;
+});
+
+slider2.addEventListener('touchmove', (e) => {
+  if (!isDragging2) return;
+  const currentPosition = e.touches[0].clientX;
+  currentTranslate2 = prevTranslate2 + (currentPosition - startPos2);
+  slider2.style.transform = `translateX(${currentTranslate2}px)`;
+});
+
+slider2.addEventListener('touchend', () => {
+  isDragging2 = false;
+
+  // Snap to closest slide
+  const slides = document.querySelectorAll('.slider2 .slide2');
+  const slideWidth = slides[0].offsetWidth;
+  const totalSlides = slides.length;
+
+  let closestIndex = Math.round(-currentTranslate2 / slideWidth);
+  closestIndex = Math.max(0, Math.min(totalSlides - 1, closestIndex));
+
+  currentTranslate2 = -closestIndex * slideWidth;
+  prevTranslate2 = currentTranslate2;
+
+  slider2.style.transform = `translateX(${currentTranslate2}px)`;
+  slider2.style.transition = 'transform 0.3s ease-in-out'; // Smooth snap
+});
+
+// Reset transition on touchstart
+slider2.addEventListener('touchstart', () => {
+  slider2.style.transition = 'none';
+});
