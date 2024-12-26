@@ -154,6 +154,38 @@
         .catch(error => console.error("Error:", error));
     }
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Function to filter lists based on search input
+        function filterList(listId, searchTerm) {
+            const listItems = document.querySelectorAll(`#${listId} .list-group-item`);
+            listItems.forEach(item => {
+                const username = item.querySelector('.request-username') ? item.querySelector('.request-username').textContent.toLowerCase() : item.textContent.toLowerCase();
+                if (username.includes(searchTerm.toLowerCase())) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    
+        // Search functionality for Sent Friend Requests
+        document.getElementById('sent-search').addEventListener('input', function(e) {
+            filterList('friend-requests-sent', e.target.value);
+        });
+    
+        // Search functionality for Received Friend Requests
+        document.getElementById('received-search').addEventListener('input', function(e) {
+            filterList('friend-requests-received', e.target.value);
+        });
+    
+        // Search functionality for Friends
+        document.getElementById('friends-search').addEventListener('input', function(e) {
+            filterList('friends-list', e.target.value);
+        });
+    });
+    
+</script>
 {% block script %}
 {% endblock script %}
 </body>

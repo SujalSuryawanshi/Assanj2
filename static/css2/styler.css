@@ -343,3 +343,42 @@ footer a:hover {
 .profile-actions .btn-danger:hover {
   background-color: #a71d2a;
 }
+
+
+/* ##FRIENDS */
+.list-group {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-group-item {
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+  background-color: #e2e6ea;
+}
+
+button {
+  margin-left: 10px;
+}
+
+form {
+  display: inline;
+}
+
+/* For search input styling */
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+}

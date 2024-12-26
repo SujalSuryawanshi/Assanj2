@@ -106,16 +106,17 @@ TEMPLATES = [
     },
 ]
 # MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
 WSGI_APPLICATION = 'Main.wsgi.application'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'assanj23',
-        'USER': 'Thomas',
-        'PASSWORD': 'sujal12',
-        'HOST': 'localhost',
-        'PORT': 5432,
+        'NAME': 'mydatabase',
+        'USER': 'myself',
+        'PASSWORD': 'thomaswilliam123',
+        'HOST': 'mydatabase.cj20g6yssurk.eu-north-1.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
@@ -144,10 +145,8 @@ USE_TZ = True
 STATIC_URL = '/staticfile/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfile')
-
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # # Google Maps API Key
 # GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY')
@@ -162,14 +161,14 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # AWS Settings
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-AWS_ACCESS_KEY_ID = 'AKIAQXUIXTV4JU2RHEUE'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'assanj09'
+AWS_ACCESS_KEY_ID = 'AKIAZOZQF7MB5BGNNT4W'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'assanjbuck'
 AWS_S3_SIGNATURE_NAME='s3v4'
 AWS_S3_REGION_NAME = 'eu-north-1'
 AWS_QUERYSTRING_AUTH = False
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 

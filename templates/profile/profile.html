@@ -52,26 +52,27 @@
 <br>
 <h4 class="anton-regular">Friend Requests Sent</h4>
 <br>
-<ul id="friend-requests-list">
+<input type="text" id="sent-search" placeholder="Search Sent Requests..." class="form-control mb-3">
+<ul id="friend-requests-sent" class="list-group">
     {% for request in friend_requests_sent %}
-        <li class="anton-regular" id="request-{{ request.id }}">
-            {{ request.to_user.username }} - 
+        <li class="anton-regular list-group-item" id="request-{{ request.id }}">
+            <span class="request-username">{{ request.to_user.username }}</span> - 
             <form method="post" action="{% url 'delete_friend_request' %}" style="display:inline;" class="cancel-request-form" data-request-id="{{ request.id }}">
                 {% csrf_token %}
                 <input type="hidden" name="request_id" value="{{ request.id }}">
                 <button type="submit" class="btn btn-warning">Cancel Request</button>
             </form>
         </li>
-        <br>
     {% endfor %}
 </ul>
 
 <h4 class="anton-regular">Friend Requests Received</h4>
 <br>
-<ul>
+<input type="text" id="received-search" placeholder="Search Received Requests..." class="form-control mb-3">
+<ul id="friend-requests-received" class="list-group">
     {% for request in friend_requests_received %}
-        <li id="received-request-{{ request.id }}" class="anton-regular">
-            {{ request.from_user.username }} - 
+        <li id="received-request-{{ request.id }}" class="anton-regular list-group-item">
+            <span class="request-username">{{ request.from_user.username }}</span> - 
             <button 
                 onclick="handleFriendRequest('accept', {{ request.id }})" 
                 class="btn btn-success">
@@ -86,22 +87,21 @@
     {% endfor %}
 </ul>
 
-
 <h4 class="anton-regular">Friends</h4>
 <br>
-<ul class="Menu-title">
+<input type="text" id="friends-search" placeholder="Search Friends..." class="form-control mb-3">
+<ul id="friends-list" class="list-group">
     {% for friend in friends %}
-        <li class="anton-regular" id="friend-{{ friend.id }}">
+        <li class="anton-regular list-group-item" id="friend-{{ friend.id }}">
             <a href="{% url 'user_profile' friend.username %}">
                 {{ friend.username }}'s Profile
             </a>
             <button 
                 onclick="removeFriend({{ friend.id }})" 
                 class="btn btn-danger">
-                Remove as Friend
+                Remove
             </button>
         </li>
-        <br>
     {% endfor %}
 </ul>
 
