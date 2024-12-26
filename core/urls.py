@@ -60,5 +60,6 @@ urlpatterns = [
      path('terms-and-conditions/', views.terms_and_conditions, name='terms_and_conditions'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
     path('refund-cancellation-policy/', views.refund_cancellation_policy, name='refund_cancellation_policy'),
+    path('contact-us/', views.contact_page, name='contact_us'),
 
     ]

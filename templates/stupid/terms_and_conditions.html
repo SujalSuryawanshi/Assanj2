@@ -9,13 +9,37 @@
 <body>
     <div class="container">
         <h1>Terms and Conditions</h1>
-        <p>Welcome to our service. Please read the following terms and conditions carefully:</p>
-        <ul>
-            <li>You agree to use Razorpay for all payments.</li>
-            <li>We do not store any personal information.</li>
-            <li>We are not responsible for any charges incurred by using Razorpay.</li>
-            <li>Payments once made are non-refundable (unless specified by Razorpay).</li>
-        </ul>
+        <p>Please read and accept the terms and conditions to proceed:</p>
+        <div class="terms-content">
+            <p>By using this service, you agree to the following:</p>
+            <ul>
+                <li>Payments are processed through Razorpay.</li>
+                <li>We do not store any sensitive data.</li>
+                <li>Refunds are handled by Razorpay according to their policies.</li>
+            </ul>
+        </div>
+
+        <div>
+            <label>
+                <input type="checkbox" id="agreeCheckbox"> I agree to the <a href="{% url 'terms_and_conditions' %}">Terms and Conditions</a> and <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+            </label>
+        </div>
+        
+        <div id="submitButton" style="display:none;">
+            <button onclick="window.location.href='/payment/'">Proceed to Payment</button>
+        </div>
     </div>
+    <script>
+        const checkbox = document.getElementById('agreeCheckbox');
+        const submitButton = document.getElementById('submitButton');
+        
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                submitButton.style.display = 'block';
+            } else {
+                submitButton.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
