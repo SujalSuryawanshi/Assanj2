@@ -854,3 +854,16 @@ def payment_success(request):
 
 def payment_failure(request):
     return render(request, 'payment_failure.html')
+
+
+
+#stupid
+
+def terms_and_conditions(request):
+    return render(request, 'stupid/terms_and_conditions.html')
+
+def privacy_policy(request):
+    return render(request, 'stupid/privacy_policy.html')
+
+def refund_cancellation_policy(request):
+    return render(request, 'stupid/refund_cancellation_policy.html')
