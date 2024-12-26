@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 DEBUG = True    
 
-ALLOWED_HOSTS = ['assanj.in', 'www.assanj.in','*','192.168.1.14']
+ALLOWED_HOSTS = ['assanj.in', 'www.assanj.in']
 
 # Secure cookies
 SESSION_COOKIE_SECURE = True
