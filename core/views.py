@@ -868,5 +868,5 @@ def privacy_policy(request):
 def refund_cancellation_policy(request):
     return render(request, 'stupid/refund_cancellation_policy.html')
 
-def refund_cancellation_policy(request):
+def contact_page(request):
     return render(request, 'stupid/contact_us.html')
