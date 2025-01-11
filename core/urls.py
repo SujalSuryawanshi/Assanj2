@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import Home,login_view, logout_view,send_friend_request, accept_friend_request, delete_friend_request,ListView,FollowStallerView,UnfollowStallerView,register,cat_view, resend_otp_view, staller_survey
-from .views import EditPost,add_menu_item, delete_menu_item, edit_menu_item,future,add_foo_category,OfferView, NewOfferView, EditOfferView, delete_offer, like_rater, review_rater, rater_list, edit_profile,  pay_page_view
+from .views import Home,login_view, logout_view,send_friend_request, accept_friend_request, delete_friend_request,ListView,FollowStallerView,UnfollowStallerView,register,cat_view, resend_otp_view
+from .views import EditPost,add_menu_item, delete_menu_item, edit_menu_item,future,add_foo_category,OfferView, NewOfferView, EditOfferView, delete_offer, edit_profile,  pay_page_view
 from . import views
 from allauth.socialaccount.providers.google.views import oauth2_login
 urlpatterns = [
@@ -40,12 +40,7 @@ urlpatterns = [
     
     path("future/", views.future, name="future"),
     path("category/<str:foo>/", views.cat_view, name="category"),
-    path('rater/', views.rater_list, name='rater_list'),
-    path('like/<int:rater_id>/', views.like_rater, name='like_rater'),
-    path('review/<int:rater_id>/', views.review_rater, name='review_rater'),
     path('edit-profile/', edit_profile, name='edit_profile'),
-    path('liker/<int:staller_id>/', views.like_staller, name='like_staller'),
-    path('staller/<int:staller_id>/survey/', staller_survey, name='staller_survey'),
     path("pay/<int:staller_id>/paypage", pay_page_view, name="pay"),
     # path("accounts/google/login/",views.google_login, name="google_login")
     path('accounts/google/direct-login/', oauth2_login, name='google_direct_login'),
