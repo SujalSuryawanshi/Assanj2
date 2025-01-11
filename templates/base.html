@@ -106,25 +106,28 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLR1Qyjhb8PEppBjXh4SAsuv6Ofqsp7sRjcWmS9jKY" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2LcEZ8fohBjg1GPaXtkh/T+yzG+5g3u9tiEJe03gyw" crossorigin="anonymous"></script>
 <script>
+    // Function to handle navigating back
     function goBack() {
       window.history.back();
     }
-  </script>
-  <script>
+</script>
+
+<script>
+    // General function to handle friend request actions (accept, decline, remove)
     function handleFriendRequest(action, requestId) {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         let url = "";
 
+        // Determine URL based on action
         if (action === "accept") {
             url = "{% url 'accept_friend_request' %}";
-        } 
-        else if (action === "decline") {
+        } else if (action === "decline") {
             url = "{% url 'delete_friend_request' %}";
-        }
-        else if (action === "removed") {
+        } else if (action === "removed") {
             url = "{% url 'per_del_friend' %}";
         }
 
+        // Perform fetch request for the corresponding action
         fetch(url, {
             method: "POST",
             headers: {
@@ -135,7 +138,11 @@
         })
         .then(response => {
             if (response.ok) {
-                document.getElementById(`received-request-${requestId}`).remove();
+                // Remove the corresponding request item from DOM upon success
+                const requestElement = document.getElementById(`received-request-${requestId}`);
+                if (requestElement) {
+                    requestElement.remove();
+                }
             } else {
                 console.error("Failed to process the request.");
             }
@@ -145,20 +152,26 @@
 </script>
 
 <script>
+    // Function to remove a friend via AJAX
     function removeFriend(friendId) {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
+        // Perform fetch request to remove friend
         fetch("{% url 'per_del_friend' %}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRFToken": csrftoken
             },
-            body: JSON.stringify({ request_id: friendId })  // Ensure friendId is passed here
+            body: JSON.stringify({ request_id: friendId })  // Pass the friendId
         })
         .then(response => {
             if (response.ok) {
-                document.getElementById(`friend-${friendId}`).remove();
+                // Remove the friend element from the DOM upon success
+                const friendElement = document.getElementById(`friend-${friendId}`);
+                if (friendElement) {
+                    friendElement.remove();
+                }
             } else {
                 console.error("Failed to remove friend.");
             }
@@ -166,13 +179,19 @@
         .catch(error => console.error("Error:", error));
     }
 </script>
+
 <script>
+    // Document ready function to initialize the search functionality
     document.addEventListener("DOMContentLoaded", function() {
+
         // Function to filter lists based on search input
         function filterList(listId, searchTerm) {
             const listItems = document.querySelectorAll(`#${listId} .list-group-item`);
             listItems.forEach(item => {
-                const username = item.querySelector('.request-username') ? item.querySelector('.request-username').textContent.toLowerCase() : item.textContent.toLowerCase();
+                const username = item.querySelector('.request-username') ? 
+                                 item.querySelector('.request-username').textContent.toLowerCase() : 
+                                 item.textContent.toLowerCase();
+                // Show or hide the list item based on search term
                 if (username.includes(searchTerm.toLowerCase())) {
                     item.style.display = 'flex';
                 } else {
@@ -180,24 +199,25 @@
                 }
             });
         }
-    
+
         // Search functionality for Sent Friend Requests
         document.getElementById('sent-search').addEventListener('input', function(e) {
             filterList('friend-requests-sent', e.target.value);
         });
-    
+
         // Search functionality for Received Friend Requests
         document.getElementById('received-search').addEventListener('input', function(e) {
             filterList('friend-requests-received', e.target.value);
         });
-    
+
         // Search functionality for Friends
         document.getElementById('friends-search').addEventListener('input', function(e) {
             filterList('friends-list', e.target.value);
         });
     });
-    
 </script>
+
+
 {% block script %}
 {% endblock script %}
 </body>

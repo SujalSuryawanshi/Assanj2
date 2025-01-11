@@ -57,11 +57,7 @@
     {% for request in friend_requests_sent %}
         <li class="anton-regular list-group-item" id="request-{{ request.id }}">
             <span class="request-username">{{ request.to_user.username }}</span> - 
-            <form method="post" action="{% url 'delete_friend_request' %}" style="display:inline;" class="cancel-request-form" data-request-id="{{ request.id }}">
-                {% csrf_token %}
-                <input type="hidden" name="request_id" value="{{ request.id }}">
-                <button type="submit" class="btn btn-warning">Cancel Request</button>
-            </form>
+            <button class="btn btn-warning cancel-request-btn" data-request-id="{{ request.id }}">Cancel Request</button>
         </li>
     {% endfor %}
 </ul>

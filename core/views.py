@@ -433,16 +433,28 @@ def accept_friend_request(request):
 @login_required
 def delete_friend_request(request):
     if request.method == 'POST':
-        data = json.loads(request.body)  # Parse JSON data
-        friend_request_id = data.get('request_id')
-        friend_request = get_object_or_404(FriendRequest, id=friend_request_id)
+        try:
+            # Parse the incoming JSON data
+            data = json.loads(request.body)
+            friend_request_id = data.get('request_id')
 
-        if friend_request.to_user == request.user or friend_request.from_user == request.user:
-            friend_request.delete()
-            
+            if not friend_request_id:
+                return JsonResponse({"error": "Missing request_id."}, status=400)
 
-    return redirect('profile', username=request.user.username)
+            # Get the friend request object or return 404 if not found
+            friend_request = get_object_or_404(FriendRequest, id=friend_request_id)
 
+            # Check if the user is involved in the request (either as 'to_user' or 'from_user')
+            if friend_request.to_user == request.user or friend_request.from_user == request.user:
+                friend_request.delete()
+                return JsonResponse({"message": "Friend request canceled successfully."}, status=200)
+            else:
+                return JsonResponse({"error": "You do not have permission to cancel this request."}, status=403)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data."}, status=400)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
 
 @login_required
 def per_del_friend(request):
