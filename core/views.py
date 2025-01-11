@@ -663,12 +663,18 @@ from django.contrib.auth.views import PasswordResetView
 
 class CustomPasswordResetView(PasswordResetView):
     email_template_name = 'register/custom_password_reset_email.html'
+    subject_template_name = 'register/custom_password_reset_subject.txt'  # optional, see below for subject change logic
+
     def get_email_options(self):
         options = super().get_email_options()
-        # Set your custom domain here
+        
+        # Set your custom domain here (if necessary)
         options['domain'] = 'https://www.assanj.in/'
-        return options
 
+        # Change the subject here
+        options['subject'] = 'Custom Password Reset Request - Assanj'
+
+        return options
 
 from django.http import JsonResponse
 
