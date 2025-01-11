@@ -434,27 +434,28 @@ def accept_friend_request(request):
 def delete_friend_request(request):
     if request.method == 'POST':
         try:
-            # Parse the incoming JSON data
-            data = json.loads(request.body)
-            friend_request_id = data.get('request_id')
+            data = json.loads(request.body)  # Parse the JSON data
+            request_id = data.get('request_id')
 
-            if not friend_request_id:
+            # Make sure the request_id exists
+            if not request_id:
                 return JsonResponse({"error": "Missing request_id."}, status=400)
 
-            # Get the friend request object or return 404 if not found
-            friend_request = get_object_or_404(FriendRequest, id=friend_request_id)
+            # Get the friend request object
+            friend_request = get_object_or_404(FriendRequest, id=request_id)
 
-            # Check if the user is involved in the request (either as 'to_user' or 'from_user')
-            if friend_request.to_user == request.user or friend_request.from_user == request.user:
+            # Ensure the logged-in user is part of the request (either the sender or recipient)
+            if friend_request.from_user == request.user or friend_request.to_user == request.user:
                 friend_request.delete()
                 return JsonResponse({"message": "Friend request canceled successfully."}, status=200)
-            else:
-                return JsonResponse({"error": "You do not have permission to cancel this request."}, status=403)
 
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON data."}, status=400)
+            # If the user is not part of the request, return an error
+            return JsonResponse({"error": "You are not authorized to cancel this request."}, status=403)
 
-    return JsonResponse({"error": "Invalid request method."}, status=405)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid method. POST required."}, status=405)
 
 @login_required
 def per_del_friend(request):
